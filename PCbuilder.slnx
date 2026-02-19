@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="PCBuilder.API/PCBuilder.API.csproj" />
+  <Project Path="PCBuilder.Application/PCBuilder.Application.csproj" />
+  <Project Path="PCBuilder.Domain/PCBuilder.Domain.csproj" />
+  <Project Path="PCBuilder.Infrastructure/PCBuilder.Infrastructure.csproj" />
+</Solution>
