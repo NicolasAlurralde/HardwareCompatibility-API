@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Elementos de la solución/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="PCBuilder.API/PCBuilder.API.csproj" />
   <Project Path="PCBuilder.Application/PCBuilder.Application.csproj" />
   <Project Path="PCBuilder.Domain/PCBuilder.Domain.csproj" />
