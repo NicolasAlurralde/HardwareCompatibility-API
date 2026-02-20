@@ -21,6 +21,8 @@ public class AppDbContext : DbContext
     public DbSet<PcCase> PcCases { get; set; }
     public DbSet<Cooler> Coolers { get; set; }
 
+    public DbSet<PCBuild> PCBuilds { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

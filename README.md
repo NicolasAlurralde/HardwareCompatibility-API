@@ -16,4 +16,5 @@ This project simulates the business rules engine behind a PC builder application
 * [x] Phase 2: Infrastructure & Database (Completed)
 * [x] Phase 3: Use Cases & Compatibility Engine (Completed)
 * [x] Phase 4: API, Swagger & Error Handling (Completed)
-* [ ] Phase 5: Validation Layer & Business Rules (In progress...)
+* [x] Phase 5: Validation Layer & Business Rules (Completed)
+* [ ] Phase 6: PC Build Engine & Compatibility Logic (In progress...)
