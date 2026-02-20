@@ -2,9 +2,6 @@
 using PCBuilder.Domain.Entities;
 using PCBuilder.Domain.Enums;
 
-using FluentValidation;
-using PCBuilder.Domain.Entities;
-
 namespace PCBuilder.API.Validators
 {
     public class ProcessorValidator : AbstractValidator<Processor>
@@ -13,6 +10,13 @@ namespace PCBuilder.API.Validators
         {
             RuleFor(p => p.Model).NotEmpty().MinimumLength(3);
             RuleFor(p => p.Price).GreaterThan(0);
+
+            // Validar que los valores pertenezcan a los Enums
+            RuleFor(p => p.Socket)
+                .IsInEnum().WithMessage("Debes seleccionar un socket válido (AM4, AM3, AM5, LGA1200, LGA1150 LGA1700).");
+
+            RuleFor(p => p.SupportedRam)
+                .IsInEnum().WithMessage("Debes seleccionar un tipo de memoria RAM válido (DDR3, DDR4, DDR5).");
 
             // --- REGLAS DE MEMORIA RAM vs SOCKET ---
 

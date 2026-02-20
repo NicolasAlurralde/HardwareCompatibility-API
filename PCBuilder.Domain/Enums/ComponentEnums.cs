@@ -29,7 +29,7 @@ namespace PCBuilder.Domain.Enums
 
     public enum EfficiencyRating
     {
-        Generic,       // Fuentes sin certificación
+        Generic,       
         PlusWhite,
         PlusBronze,
         PlusSilver,
