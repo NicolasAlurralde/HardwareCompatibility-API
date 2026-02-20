@@ -36,6 +36,10 @@ namespace PCBuilder.Infrastructure.Repositories
 
         public async Task UpdateAsync(T entity)
         {
+            // LÍNEA MÁGICA: Le decimos a EF Core que suelte cualquier objeto 
+            // que tenga agarrado en la memoria para evitar conflictos de ID.
+            _context.ChangeTracker.Clear();
+
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
         }

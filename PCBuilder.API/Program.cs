@@ -7,7 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // ... código anterior ...
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
+builder.Services.AddSwaggerGen();
 
 // ¡NUEVA CONFIGURACIÓN DE BASE DE DATOS!
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -21,6 +25,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();   // <-- NUEVA LÍNEA
+    app.UseSwaggerUI(); // <-- NUEVA LÍNEA
 }
 
 app.UseHttpsRedirection();
