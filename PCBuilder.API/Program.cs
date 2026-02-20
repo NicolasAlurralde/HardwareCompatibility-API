@@ -1,5 +1,7 @@
-using PCBuilder.Infrastructure.Data;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using PCBuilder.Infrastructure.Data;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,11 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddSwaggerGen();
 
+// Esto ya lo pusimos, pero verificalo
+builder.Services.AddValidatorsFromAssemblyContaining<PCBuilder.API.Validators.ProcessorValidator>();
+
+// Esto hace que la API devuelva automáticamente un 400 con los errores del Validador
+builder.Services.AddFluentValidationAutoValidation();
 // ¡NUEVA CONFIGURACIÓN DE BASE DE DATOS!
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

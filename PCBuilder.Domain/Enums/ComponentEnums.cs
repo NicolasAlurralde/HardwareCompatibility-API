@@ -9,8 +9,10 @@ namespace PCBuilder.Domain.Enums
         AM4,
         AM5,
         LGA1700,
-        LGA1200
-        // Podemos agregar más luego
+        LGA1200,
+        AM3,      // <-- Agregamos este
+        LGA1150,  // <-- Agregamos este
+                  // ... cualquier otro que quieras tener
     }
 
     public enum RamType
