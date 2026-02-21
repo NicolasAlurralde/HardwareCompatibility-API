@@ -14,6 +14,7 @@ This project simulates the business rules engine behind a PC builder application
 
 ## 🔥 Core Features
 * **Smart Validation Engine:** Validates sockets, RAM generations, physical dimensions (Cooler height vs Case clearance), and power supply capacity including safety margins.
+* **Hierarchical Smart Catalogs:** Dynamic endpoints utilizing Query Strings to filter components based on complex physical rules (e.g., EATX cases safely housing MicroATX boards, or radiator clearance for AIO liquid cooling).
 * **Hybrid Configurations:** Supports advanced PC builds with Hybrid Storage (M.2 NVMe + SATA) and Multi-GPU setups.
 * **Warning System:** Differentiates between critical physical incompatibilities (Errors) and performance bottlenecks (Warnings, e.g., PCIe Gen3 GPU on a Gen4 Motherboard).
 * **Flexible Checkout:** Accepts partial builds (upgrade kits) seamlessly handling `null` values for optional components.
@@ -26,4 +27,5 @@ This project simulates the business rules engine behind a PC builder application
 * [x] Phase 4: API, Swagger & Error Handling
 * [x] Phase 5: Validation Layer & Business Rules
 * [x] Phase 6: PC Build Engine & Checkout Endpoints (`/analyze` & `/save`)
-* [ ] Phase 7: Catalog API & Smart Filters (In progress...)
+* [x] Phase 7: Catalog API & Smart Physical Filters 
+* [ ] Phase 8: Data Integration & Multimedia (EF Core Migrations for Component Images)
