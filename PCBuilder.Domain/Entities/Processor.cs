@@ -9,5 +9,6 @@ namespace PCBuilder.Domain.Entities
         public SocketType Socket { get; set; }
         public RamType SupportedRam { get; set; }
         public bool IncludesStockCooler { get; set; } // Dato útil para saber si hay que obligar a comprar un cooler
+        public bool HasIntegratedGraphics { get; set; }
     }
 }

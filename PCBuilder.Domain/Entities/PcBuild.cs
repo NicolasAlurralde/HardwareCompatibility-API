@@ -16,18 +16,19 @@ namespace PCBuilder.Domain.Entities
         public int MotherboardId { get; set; }
         public Motherboard Motherboard { get; set; } = null!;
 
-        public int RamId { get; set; }
-        public Ram Ram { get; set; } = null!;
-        public int RamQuantity { get; set; } = 1; // Para saber si compró 1 o 2 módulos iguales
+        public int? RamId { get; set; }
+        public Ram? Ram { get; set; }
+        public int RamQuantity { get; set; } = 0;
 
-        public int PowerSupplyId { get; set; }
-        public PowerSupply PowerSupply { get; set; } = null!;
+        public int? PowerSupplyId { get; set; }
+        public PowerSupply? PowerSupply { get; set; }
 
-        public int PcCaseId { get; set; }
-        public PcCase PcCase { get; set; } = null!;
+        public int? PcCaseId { get; set; }
+        public PcCase? PcCase { get; set; }
 
-        public int StorageId { get; set; }
-        public Storage Storage { get; set; } = null!;
+        public int? StorageId { get; set; }
+        public Storage? Storage { get; set; }
+        public int StorageQuantity { get; set; } = 0;
 
         // --- Relaciones Opcionales ---
 
@@ -39,6 +40,14 @@ namespace PCBuilder.Domain.Entities
         public int? CoolerId { get; set; }
         public Cooler? Cooler { get; set; }
 
+        // --- Componentes Secundarios ---
+        public int? SecondaryStorageId { get; set; }
+        public Storage? SecondaryStorage { get; set; }
+        public int SecondaryStorageQuantity { get; set; } = 0;
+
+        public int? SecondaryVideoCardId { get; set; }
+        public VideoCard? SecondaryVideoCard { get; set; }
+
 
         // --- Lógica de Negocio Integrada ---
 
@@ -49,8 +58,9 @@ namespace PCBuilder.Domain.Entities
             ((Ram?.Price ?? 0) * RamQuantity) +
             (PowerSupply?.Price ?? 0) +
             (PcCase?.Price ?? 0) +
-            (Storage?.Price ?? 0) +
+            ((Storage?.Price ?? 0) * StorageQuantity) +
             (VideoCard?.Price ?? 0) +
-            (Cooler?.Price ?? 0);
+            (Cooler?.Price ?? 0) + ((SecondaryStorage?.Price ?? 0) * SecondaryStorageQuantity)
+         + (SecondaryVideoCard?.Price ?? 0);
     }
 }

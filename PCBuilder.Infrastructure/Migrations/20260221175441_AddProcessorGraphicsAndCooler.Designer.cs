@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PCBuilder.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using PCBuilder.Infrastructure.Data;
 namespace PCBuilder.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260221175441_AddProcessorGraphicsAndCooler")]
+    partial class AddProcessorGraphicsAndCooler
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,31 +146,22 @@ namespace PCBuilder.Infrastructure.Migrations
                     b.Property<int>("MotherboardId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PcCaseId")
+                    b.Property<int>("PcCaseId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PowerSupplyId")
+                    b.Property<int>("PowerSupplyId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProcessorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RamId")
+                    b.Property<int>("RamId")
                         .HasColumnType("int");
 
                     b.Property<int>("RamQuantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SecondaryStorageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SecondaryStorageQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SecondaryVideoCardId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StorageId")
+                    b.Property<int>("StorageId")
                         .HasColumnType("int");
 
                     b.Property<int>("StorageQuantity")
@@ -189,10 +183,6 @@ namespace PCBuilder.Infrastructure.Migrations
                     b.HasIndex("ProcessorId");
 
                     b.HasIndex("RamId");
-
-                    b.HasIndex("SecondaryStorageId");
-
-                    b.HasIndex("SecondaryVideoCardId");
 
                     b.HasIndex("StorageId");
 
@@ -455,11 +445,15 @@ namespace PCBuilder.Infrastructure.Migrations
 
                     b.HasOne("PCBuilder.Domain.Entities.PcCase", "PcCase")
                         .WithMany()
-                        .HasForeignKey("PcCaseId");
+                        .HasForeignKey("PcCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PCBuilder.Domain.Entities.PowerSupply", "PowerSupply")
                         .WithMany()
-                        .HasForeignKey("PowerSupplyId");
+                        .HasForeignKey("PowerSupplyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PCBuilder.Domain.Entities.Processor", "Processor")
                         .WithMany()
@@ -469,19 +463,15 @@ namespace PCBuilder.Infrastructure.Migrations
 
                     b.HasOne("PCBuilder.Domain.Entities.Ram", "Ram")
                         .WithMany()
-                        .HasForeignKey("RamId");
-
-                    b.HasOne("PCBuilder.Domain.Entities.Storage", "SecondaryStorage")
-                        .WithMany()
-                        .HasForeignKey("SecondaryStorageId");
-
-                    b.HasOne("PCBuilder.Domain.Entities.VideoCard", "SecondaryVideoCard")
-                        .WithMany()
-                        .HasForeignKey("SecondaryVideoCardId");
+                        .HasForeignKey("RamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PCBuilder.Domain.Entities.Storage", "Storage")
                         .WithMany()
-                        .HasForeignKey("StorageId");
+                        .HasForeignKey("StorageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PCBuilder.Domain.Entities.VideoCard", "VideoCard")
                         .WithMany()
@@ -498,10 +488,6 @@ namespace PCBuilder.Infrastructure.Migrations
                     b.Navigation("Processor");
 
                     b.Navigation("Ram");
-
-                    b.Navigation("SecondaryStorage");
-
-                    b.Navigation("SecondaryVideoCard");
 
                     b.Navigation("Storage");
 
