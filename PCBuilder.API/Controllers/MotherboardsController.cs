@@ -20,13 +20,27 @@ namespace PCBuilder.API.Controllers
 
         // GET: api/motherboards
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Motherboard>>> GetAll([FromQuery] string? model)
+        public async Task<ActionResult<IEnumerable<Motherboard>>> GetAll([FromQuery] string? model, [FromQuery] string? socket, [FromQuery] string? supportedRam)
         {
+            // Traemos todas las placas del repositorio
             var motherboards = await _repository.GetAllAsync();
 
+            // 1. Filtro por Modelo (Optimizado)
             if (!string.IsNullOrEmpty(model))
             {
-                motherboards = motherboards.Where(m => m.Model.ToLower().Contains(model.ToLower()));
+                motherboards = motherboards.Where(m => m.Model.Contains(model, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 2. Filtro Inteligente por Socket (Convirtiendo el Enum a String)
+            if (!string.IsNullOrEmpty(socket))
+            {
+                motherboards = motherboards.Where(m => string.Equals(m.Socket.ToString(), socket, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 3. Filtro Inteligente por Tipo de RAM (Convirtiendo el Enum a String)
+            if (!string.IsNullOrEmpty(supportedRam))
+            {
+                motherboards = motherboards.Where(m => string.Equals(m.SupportedRam.ToString(), supportedRam, StringComparison.OrdinalIgnoreCase));
             }
 
             return Ok(motherboards);

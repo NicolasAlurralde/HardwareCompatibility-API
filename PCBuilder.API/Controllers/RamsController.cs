@@ -18,18 +18,28 @@ namespace PCBuilder.API.Controllers
             _repository = repository;
         }
 
-        // GET: api/Rams
+        // GET: api/rams
+        // Filtros opcionales: ?model=Fury&type=DDR4
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Ram>>> GetAll([FromQuery] string? model)
+        public async Task<ActionResult<IEnumerable<Ram>>> GetAll([FromQuery] string? model, [FromQuery] string? type)
         {
-            var Rams = await _repository.GetAllAsync();
+            // Traemos todas las memorias del repositorio
+            var rams = await _repository.GetAllAsync();
 
+            // 1. Filtro por Modelo (ej: "Fury", "Vengeance")
             if (!string.IsNullOrEmpty(model))
             {
-                Rams = Rams.Where(m => m.Model.ToLower().Contains(model.ToLower()));
+                rams = rams.Where(r => r.Model.Contains(model, StringComparison.OrdinalIgnoreCase));
             }
 
-            return Ok(Rams);
+            // 2. Filtro Inteligente por Tipo (Convirtiendo el Enum DDR3, DDR4, DDR5 a texto)
+            if (!string.IsNullOrEmpty(type))
+            {
+                // ¡Acá usamos tu propiedad r.Type!
+                rams = rams.Where(r => string.Equals(r.Type.ToString(), type, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return Ok(rams);
         }
 
         // GET: api/Rams/5

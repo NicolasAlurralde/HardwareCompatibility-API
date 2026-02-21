@@ -18,18 +18,35 @@ namespace PCBuilder.API.Controllers
             _repository = repository;
         }
 
-        // GET: api/Coolers
+        // GET: api/coolers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cooler>>> GetAll([FromQuery] string? model)
+        public async Task<ActionResult<IEnumerable<Cooler>>> GetAll(
+            [FromQuery] string? model,
+            [FromQuery] string? type,
+            [FromQuery] string? socket) // <-- El socket del procesador que ya eligió el cliente
         {
-            var Coolers = await _repository.GetAllAsync();
+            var coolers = await _repository.GetAllAsync();
 
+            // 1. Filtro por Modelo
             if (!string.IsNullOrEmpty(model))
             {
-                Coolers = Coolers.Where(m => m.Model.ToLower().Contains(model.ToLower()));
+                coolers = coolers.Where(c => c.Model.Contains(model, StringComparison.OrdinalIgnoreCase));
             }
 
-            return Ok(Coolers);
+            // 2. Filtro por Tipo (Air, Liquid)
+            if (!string.IsNullOrEmpty(type))
+            {
+                coolers = coolers.Where(c => string.Equals(c.Type.ToString(), type, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 3. Filtro Inteligente: Buscar dentro de la lista de Sockets Soportados
+            if (!string.IsNullOrEmpty(socket))
+            {
+                // Verificamos si la lista de anclajes del cooler contiene el socket que nos piden
+                coolers = coolers.Where(c => c.SupportedSockets.Any(s => string.Equals(s.ToString(), socket, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            return Ok(coolers);
         }
 
         // GET: api/Coolers/5

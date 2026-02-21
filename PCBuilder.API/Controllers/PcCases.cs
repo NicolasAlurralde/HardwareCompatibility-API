@@ -18,18 +18,79 @@ namespace PCBuilder.API.Controllers
             _repository = repository;
         }
 
-        // GET: api/PcCases
+        // GET: api/pccases
+        // Filtros opcionales físicos, de tamaño y refrigeración
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PcCase>>> GetAll([FromQuery] string? model)
+        public async Task<ActionResult<IEnumerable<PcCase>>> GetAll(
+            [FromQuery] string? model,
+            [FromQuery] string? motherboardSize,
+            [FromQuery] string? psuFormFactor,
+            [FromQuery] int? coolerHeightMm,
+            [FromQuery] int? gpuLengthMm,
+            [FromQuery] bool? requiresLiquidCooling, // <-- NUEVO: ¿Eligió un Watercooler?
+            [FromQuery] int? radiatorSizeMm)         // <-- NUEVO: ¿De qué tamaño es el radiador?
         {
-            var PcCases = await _repository.GetAllAsync();
+            // Traemos todos los gabinetes del repositorio
+            var pcCases = await _repository.GetAllAsync();
 
+            // 1. Filtro por Modelo
             if (!string.IsNullOrEmpty(model))
             {
-                PcCases = PcCases.Where(m => m.Model.ToLower().Contains(model.ToLower()));
+                pcCases = pcCases.Where(c => c.Model.Contains(model, StringComparison.OrdinalIgnoreCase));
             }
 
-            return Ok(PcCases);
+            // 2. Filtro Jerárquico por Tamaño de Placa Madre
+            if (!string.IsNullOrEmpty(motherboardSize))
+            {
+                var targetSize = motherboardSize.ToLower();
+                var allowedSizes = new List<string>();
+
+                if (targetSize == "miniitx") allowedSizes.AddRange(new[] { "miniitx", "microatx", "atx", "eatx" });
+                else if (targetSize == "microatx") allowedSizes.AddRange(new[] { "microatx", "atx", "eatx" });
+                else if (targetSize == "atx") allowedSizes.AddRange(new[] { "atx", "eatx" });
+                else if (targetSize == "eatx") allowedSizes.Add("eatx");
+                else allowedSizes.Add(targetSize);
+
+                pcCases = pcCases.Where(c => allowedSizes.Contains(c.MaxMotherboardSize.ToString().ToLower()));
+            }
+
+            // 3. Filtro por Formato de la Fuente
+            if (!string.IsNullOrEmpty(psuFormFactor))
+            {
+                pcCases = pcCases.Where(c => string.Equals(c.SupportedPsuFormFactor.ToString(), psuFormFactor, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 4. Filtro Matemático: Altura del Cooler (Para coolers de aire)
+            if (coolerHeightMm.HasValue)
+            {
+                pcCases = pcCases.Where(c => c.MaxCpuCoolerHeightMm >= coolerHeightMm.Value);
+            }
+
+            // 5. Filtro Matemático: Largo de la Placa de Video
+            if (gpuLengthMm.HasValue)
+            {
+                pcCases = pcCases.Where(c => c.MaxGpuLengthMm >= gpuLengthMm.Value);
+            }
+
+            // ==========================================
+            // 6 y 7. LOS NUEVOS FILTROS DE LÍQUIDA
+            // ==========================================
+
+            // Si el frontend nos avisa que el usuario eligió refrigeración líquida...
+            if (requiresLiquidCooling.HasValue && requiresLiquidCooling.Value)
+            {
+                // Excluimos los gabinetes de oficina o muy chicos que no soportan líquida
+                pcCases = pcCases.Where(c => c.SupportsLiquidCooling);
+            }
+
+            // Y si nos dice de qué tamaño es el radiador (ej: 240)...
+            if (radiatorSizeMm.HasValue && radiatorSizeMm.Value > 0)
+            {
+                // Dejamos solo los gabinetes cuyo límite sea 240 o más (ej: 240, 280, 360, 420)
+                pcCases = pcCases.Where(c => c.MaxRadiatorSizeMm >= radiatorSizeMm.Value);
+            }
+
+            return Ok(pcCases);
         }
 
         // GET: api/PcCases/5

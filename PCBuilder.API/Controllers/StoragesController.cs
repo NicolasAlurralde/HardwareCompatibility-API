@@ -17,19 +17,28 @@ namespace PCBuilder.API.Controllers
         {
             _repository = repository;
         }
-
-        // GET: api/Storages
+        // GET: api/storages
+        // Filtros opcionales: ?model=Kingston&interfaceType=SATA
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Storage>>> GetAll([FromQuery] string? model)
+        public async Task<ActionResult<IEnumerable<Storage>>> GetAll([FromQuery] string? model, [FromQuery] string? interfaceType)
         {
-            var Storages = await _repository.GetAllAsync();
+            // Traemos todos los almacenamientos del repositorio
+            var storages = await _repository.GetAllAsync();
 
+            // 1. Filtro por Modelo (ej: "Kingston", "Western Digital")
             if (!string.IsNullOrEmpty(model))
             {
-                Storages = Storages.Where(m => m.Model.ToLower().Contains(model.ToLower()));
+                storages = storages.Where(s => s.Model.Contains(model, StringComparison.OrdinalIgnoreCase));
             }
 
-            return Ok(Storages);
+            // 2. Filtro Inteligente por Tipo de Interfaz (SATA, M2_NVMe, etc.)
+            if (!string.IsNullOrEmpty(interfaceType))
+            {
+                // Convertimos tu Enum InterfaceType a string para comparar
+                storages = storages.Where(s => string.Equals(s.InterfaceType.ToString(), interfaceType, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return Ok(storages);
         }
 
         // GET: api/Storages/5
