@@ -20,18 +20,38 @@ namespace PCBuilder.API.Controllers
         }
 
         // GET: api/processors
-        // Endpoint para pedir la lista, con la opción de filtrar por modelo
+        // Filtros: ?model=Ryzen&socket=AM4&hasIntegratedGraphics=true&includesStockCooler=true
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Processor>>> GetAll([FromQuery] string? model)
+        public async Task<ActionResult<IEnumerable<Processor>>> GetAll(
+            [FromQuery] string? model,
+            [FromQuery] string? socket,
+            [FromQuery] bool? hasIntegratedGraphics,
+            [FromQuery] bool? includesStockCooler) // <-- NUEVO: El filtro del cooler de fábrica
         {
-            // 1. Traemos todos los procesadores
             var processors = await _repository.GetAllAsync();
 
-            // 2. Si el usuario escribió algo en la búsqueda, filtramos la lista
+            // 1. Filtro por Modelo
             if (!string.IsNullOrEmpty(model))
             {
-                // Usamos LINQ para buscar coincidencias (ignorando mayúsculas/minúsculas)
-                processors = processors.Where(p => p.Model.ToLower().Contains(model.ToLower()));
+                processors = processors.Where(p => p.Model.Contains(model, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 2. Filtro Inteligente: Socket
+            if (!string.IsNullOrEmpty(socket))
+            {
+                processors = processors.Where(p => string.Equals(p.Socket.ToString(), socket, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 3. Filtro Lógico: Gráficos integrados
+            if (hasIntegratedGraphics.HasValue)
+            {
+                processors = processors.Where(p => p.HasIntegratedGraphics == hasIntegratedGraphics.Value);
+            }
+
+            // 4. Filtro Económico: ¿Trae Cooler de Stock?
+            if (includesStockCooler.HasValue)
+            {
+                processors = processors.Where(p => p.IncludesStockCooler == includesStockCooler.Value); // Cambiá esto por el nombre exacto de tu propiedad
             }
 
             return Ok(processors);

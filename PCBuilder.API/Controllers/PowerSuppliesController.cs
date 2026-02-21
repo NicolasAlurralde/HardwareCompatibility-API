@@ -18,20 +18,42 @@ namespace PCBuilder.API.Controllers
             _repository = repository;
         }
 
-        // GET: api/PowerSupplies
+        // GET: api/powersupplies
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PowerSupply>>> GetAll([FromQuery] string? model)
+        public async Task<ActionResult<IEnumerable<PowerSupply>>> GetAll(
+            [FromQuery] string? model,
+            [FromQuery] string? certification,
+            [FromQuery] string? formFactor,
+            [FromQuery] int? minWattage) // <-- Filtro clave de consumo
         {
-            var PowerSupplies = await _repository.GetAllAsync();
+            var powerSupplies = await _repository.GetAllAsync();
 
+            // 1. Filtro por Modelo
             if (!string.IsNullOrEmpty(model))
             {
-                PowerSupplies = PowerSupplies.Where(m => m.Model.ToLower().Contains(model.ToLower()));
+                powerSupplies = powerSupplies.Where(p => p.Model.Contains(model, StringComparison.OrdinalIgnoreCase));
             }
 
-            return Ok(PowerSupplies);
-        }
+            // 2. Filtro por Certificación (80 Plus Bronze, Gold, etc.)
+            if (!string.IsNullOrEmpty(certification))
+            {
+                powerSupplies = powerSupplies.Where(p => string.Equals(p.Certification.ToString(), certification, StringComparison.OrdinalIgnoreCase));
+            }
 
+            // 3. Filtro por Formato (ATX, SFX)
+            if (!string.IsNullOrEmpty(formFactor))
+            {
+                powerSupplies = powerSupplies.Where(p => string.Equals(p.FormFactor.ToString(), formFactor, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 4. Filtro Matemático: Wattaje Mínimo
+            if (minWattage.HasValue)
+            {
+                powerSupplies = powerSupplies.Where(p => p.Wattage >= minWattage.Value);
+            }
+
+            return Ok(powerSupplies);
+        }
         // GET: api/PowerSupplies/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PowerSupply>> GetById(int id)

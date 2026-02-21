@@ -18,18 +18,35 @@ namespace PCBuilder.API.Controllers
             _repository = repository;
         }
 
-        // GET: api/VideoCards
+        // GET: api/videocards
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VideoCard>>> GetAll([FromQuery] string? model)
+        public async Task<ActionResult<IEnumerable<VideoCard>>> GetAll(
+            [FromQuery] string? model,
+            [FromQuery] int? minVramGb,
+            [FromQuery] int? maxLengthMm) // <-- Espacio disponible en el gabinete
         {
-            var VideoCards = await _repository.GetAllAsync();
+            var videoCards = await _repository.GetAllAsync();
 
+            // 1. Filtro por Modelo
             if (!string.IsNullOrEmpty(model))
             {
-                VideoCards = VideoCards.Where(m => m.Model.ToLower().Contains(model.ToLower()));
+                videoCards = videoCards.Where(v => v.Model.Contains(model, StringComparison.OrdinalIgnoreCase));
             }
 
-            return Ok(VideoCards);
+            // 2. Filtro Matemático: Mínimo de Memoria VRAM
+            if (minVramGb.HasValue)
+            {
+                videoCards = videoCards.Where(v => v.VramGb >= minVramGb.Value);
+            }
+
+            // 3. Filtro Físico Inverso: Largo Máximo
+            // Acá la placa TIENE QUE SER MENOR O IGUAL al espacio disponible en el gabinete
+            if (maxLengthMm.HasValue)
+            {
+                videoCards = videoCards.Where(v => v.LengthMm <= maxLengthMm.Value);
+            }
+
+            return Ok(videoCards);
         }
 
         // GET: api/VideoCards/5
